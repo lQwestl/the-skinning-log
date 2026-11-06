@@ -339,7 +339,7 @@ function U:Research()
     else self:Text(milestones, "Observe a new species", 16, 309, 14, self.c.text) end
     self:Text(milestones, L("New species") .. " +40 XP  ·  " .. L("New zone") .. " +25 XP", 16, 376, 11, self.c.gold, 485)
     local b = self:Button(p, "How XP works", 0, 431, 180, 28, function() S:Welcome(true, true) end)
-    self:Tooltip(b, "How XP works", { L("Successful skin") .. ": 5 XP", L("New species") .. ": +40 XP", L("New zone") .. ": +25 XP", "10 / 50 / 100 skins: +30 / 75 / 150 XP", "Goals of 25+ materials grant 25 XP, up to twice per day." })
+    self:Tooltip(b, "How XP works", { "Successful skin: 5 XP", "New species: +40 XP", "New zone: +25 XP", "10 / 50 / 100 skins: +30 / 75 / 150 XP", "Goals of 25+ materials grant 25 XP, up to twice per day." })
     self:OneLine(p, state.migratedXP and state.migratedXP > 0 and S.Fmt("%d XP credited from earlier observations", state.migratedXP) or "", 200, 440, 10, self.c.muted, 690)
 end
 

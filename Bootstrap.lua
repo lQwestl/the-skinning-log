@@ -126,6 +126,21 @@ function S:Command(input)
     elseif command == "new" then self.Model:NewSession(); self.UI:Open("session")
     elseif command == "help" then
         self:Welcome(true)
+    elseif command == "ru" or command == "russian" then
+        self.Model.db.settings.language = "ruRU"
+        self:Print("Язык переключен на русский.")
+        if self.UI then self.UI:Refresh() end
+        if self.HUD then self.HUD:Refresh() end
+    elseif command == "en" or command == "english" then
+        self.Model.db.settings.language = "enUS"
+        self:Print("Language set to English.")
+        if self.UI then self.UI:Refresh() end
+        if self.HUD then self.HUD:Refresh() end
+    elseif command == "de" or command == "german" then
+        self.Model.db.settings.language = "deDE"
+        self:Print("Sprache auf Deutsch eingestellt.")
+        if self.UI then self.UI:Refresh() end
+        if self.HUD then self.HUD:Refresh() end
     else self.UI:Toggle() end
 end
 

@@ -69,7 +69,8 @@ function M:Init()
     db.settings = db.settings or {}
     local defaults = { enabled = true, announce = true, tooltips = true, minimap = true, minimapAngle = 215, scope = "all",
         hud = true, hudExpanded = false, hudScale = 1, worldPins = true, miniPins = false,
-        sound = false, motion = true, journalScale = 0.9, lootText = true }
+        sound = false, motion = true, journalScale = 0.9, lootText = true,
+        language = (GetLocale and GetLocale() == "deDE") and "deDE" or "ruRU" }
     for k, v in pairs(defaults) do if db.settings[k] == nil then db.settings[k] = v end end
     db.notes = db.notes or {}
     db.favorites = db.favorites or {}

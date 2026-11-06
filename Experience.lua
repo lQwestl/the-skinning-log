@@ -134,7 +134,8 @@ function H:Build()
         local expedition = U:Button(self.details, "Expedition", 11, 112, 84, 27, function() U:Open("session") end)
         local grounds = U:Button(self.details, "Hunting grounds", 103, 112, 108, 27, function() S.Maps:Open() end)
         local research = U:Button(self.details, "Research", 219, 112, 64, 27, function() U:Open("research") end)
-        for _, shortcut in ipairs({ expedition, grounds, research }) do shortcut.label:SetFont(STANDARD_TEXT_FONT, 10, "") end
+        local shortcutFont = (GameFontNormal and GameFontNormal:GetFont()) or STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF"
+        for _, shortcut in ipairs({ expedition, grounds, research }) do shortcut.label:SetFont(shortcutFont, 10, "") end
         local elapsed = 0
         f:SetScript("OnUpdate", function(_, delta) elapsed = elapsed + delta; if elapsed >= 1 then elapsed = 0; self:Tick() end end)
         f:SetScript("OnEnter", function()

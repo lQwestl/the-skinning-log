@@ -17,18 +17,19 @@ function S:ToggleDemo()
         local session = self.Model:Empty()
         session.start = time() - 1380
         for _, c in ipairs(creatures) do
+            local cName, cFamily, cZone = S.L(c[2]), S.L(c[4]), S.L(c[7])
             for i = 1, c[5] do
-                local items = { [2318] = { count = i % 3 == 0 and 2 or 1, name = "Light Leather",
+                local items = { [2318] = { count = i % 3 == 0 and 2 or 1, name = S.L("Light Leather"),
                     icon = "Interface\\Icons\\INV_Misc_LeatherScrap_03", link = "item:2318" } }
-                if i % 11 == 0 then items[783] = { count = 1, name = "Light Hide", icon = "Interface\\Icons\\INV_Misc_Pelt_Wolf_01", link = "item:783" } end
-                local record = { npcID = c[1], name = c[2], level = c[3], family = c[4],
-                    mapID = c[6], zone = c[7], x = c[8] + ((i * 7) % 11 - 5) / 400,
+                if i % 11 == 0 then items[783] = { count = 1, name = S.L("Light Hide"), icon = "Interface\\Icons\\INV_Misc_Pelt_Wolf_01", link = "item:783" } end
+                local record = { npcID = c[1], name = cName, level = c[3], family = cFamily,
+                    mapID = c[6], zone = cZone, x = c[8] + ((i * 7) % 11 - 5) / 400,
                     y = c[9] + ((i * 3) % 9 - 4) / 400, items = items, at = time() - (c[5] - i) * 38 }
                 self.Model:Aggregate(data, record)
                 if c[1] == 1131 and i > 70 then self.Model:Aggregate(session, record) end
             end
         end
-        self.demo = { data = data, session = session, goal = { itemID = 2318, name = "Light Leather", target = 100,
+        self.demo = { data = data, session = session, goal = { itemID = 2318, name = S.L("Light Leather"), target = 100,
             baseline = data.items[2318].count - 63 } }
     end
     if self.UI then self.UI.selected = nil; self.UI.page = 1; self.UI:Refresh() end

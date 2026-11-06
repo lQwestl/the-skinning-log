@@ -1,6 +1,8 @@
 ## Interface: 16001
 ## Title: The Skinning Log
+## Title-ruRU: The Skinning Log |cffe6c16c[Журнал снятия шкур]|r
 ## Notes: Your personal skinning field guide, yield ledger, and hunting atlas. /tsl
+## Notes-ruRU: Полевой журнал снятия шкур, учет добычи и охотничий атлас. /tsl
 ## Author: Serron
 ## Version: 0.4.3
 ## IconTexture: Interface\Icons\INV_Misc_Pelt_Wolf_01

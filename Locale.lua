@@ -1,4 +1,5 @@
 local _, S = ...
+
 local de = {
     ["Field journal"] = "Feldjournal", ["Creatures"] = "Kreaturen", ["Materials"] = "Materialien",
     ["Hunting grounds"] = "Jagdgebiete", ["Expedition"] = "Expedition", ["Research"] = "Forschung",
@@ -89,43 +90,264 @@ local de = {
     ["10 / 50 / 100 skins of a species award +30 / 75 / 150 XP. Earn ranks, badges and journal titles as your research grows."] = "10 / 50 / 100 Häutungen einer Art geben +30 / 75 / 150 XP. Erforsche die Tierwelt und sammle Ränge, Abzeichen und Titel im Journal.",
     ["Goals of 25+ materials grant 25 XP, up to twice per day. Goals count only new loot. Discoveries and rank rewards persist between adventures."] = "Ziele ab 25 Materialien geben 25 XP, bis zu zweimal täglich. Nur neue Beute zählt. Entdeckungen und Forschungsränge bleiben gespeichert.",
     ["unknown"] = "unbekannt", ["Unknown zone"] = "Unbekanntes Gebiet", ["Unidentified creature"] = "Unbekannte Kreatur",
+    ["Skin loot notifications"] = "Beutehinweise beim Häuten",
+    ["%s · average %s materials/skin"] = "%s · Ø %s Material/Tier",
+    ["Total · observed rate"] = "Menge · Fundrate",
+    ["Small sample · observed rates may vary."] = "Kleine Stichprobe · Fundraten können schwanken.",
+    ["Your species mastery"] = "Deine Artenkenntnis",
+    ["Field note"] = "Feldnotiz",
+    ["Material"] = "Material",
+    ["%d more materials · /tsl for details"] = "%d weitere Materialien · Details mit /tsl",
+    ["Skins"] = "Felle",
+    ["Journal creation failed twice. Use /reload before trying again."] = "Der Journalaufbau ist zweimal fehlgeschlagen. Bitte vor dem nächsten Versuch /reload ausführen.",
+    ["10 / 50 / 100 skins: +30 / 75 / 150 XP"] = "10 / 50 / 100 Häutungen: +30 / 75 / 150 XP",
+    ["Successful skin: 5 XP"] = "Erfolgreiche Häutung: 5 XP",
+    ["New species: +40 XP"] = "Neue Art: +40 XP",
+    ["New zone: +25 XP"] = "Neues Gebiet: +25 XP",
 }
-S.locale = GetLocale and GetLocale() or "enUS"
-function S.L(text) return S.locale == "deDE" and (de[text] or text) or text end
+
+local ru = {
+    ["Field journal"] = "Полевой журнал", ["Creatures"] = "Существа", ["Materials"] = "Материалы",
+    ["Hunting grounds"] = "Охотничьи угодья", ["Expedition"] = "Экспедиция", ["Research"] = "Исследования",
+    ["Preferences"] = "Настройки", ["Help"] = "Помощь", ["Close"] = "Закрыть",
+    ["All characters"] = "Все персонажи", ["This character"] = "Этот персонаж",
+    ["All creatures"] = "Все существа", ["Favorites"] = "Избранное", ["Mastered"] = "Изученные",
+    ["Most materials"] = "Больше всего материалов", ["Yield per skin"] = "Добыча со шкуры",
+    ["Most skinned"] = "Чаще освежеванные", ["Recently seen"] = "Недавние", ["Name"] = "Название",
+    ["Search creatures, materials or zones..."] = "Поиск существ, материалов или зон...",
+    ["Search materials..."] = "Поиск материалов...", ["Save note"] = "Сохранить",
+    ["Field note..."] = "Полевая заметка...", ["Favorite"] = "В избранное", ["Favorited"] = "В избранном",
+    ["Discovered"] = "Открыто", ["Tracker"] = "Следопыт", ["Expert"] = "Эксперт", ["Master"] = "Мастер",
+    ["Skinned"] = "Снято шкур", ["Collected"] = "Собрано", ["Per skin"] = "За шкуру",
+    ["Observed drops"] = "Замеченная добыча", ["Quantity"] = "Количество", ["Frequency"] = "Шанс",
+    ["Show on map"] = "Показать на карте", ["Set waypoint"] = "Точка назначения",
+    ["Best sources"] = "Лучшие источники", ["Estimated value"] = "Оценочная стоимость",
+    ["AH estimate"] = "Оценка аукциона", ["Vendor"] = "Торговец", ["No price"] = "Нет цены",
+    ["Collection goal"] = "Цель сбора", ["Set goal"] = "Задать цель", ["Clear goal"] = "Сбросить цель",
+    ["New expedition"] = "Новая экспедиция", ["Recent gathers"] = "Последние сборы",
+    ["Session history"] = "История сессий", ["Current session"] = "Текущая сессия",
+    ["Elapsed"] = "Время", ["Skins / hour"] = "Шкур в час", ["Session XP"] = "Опыт сессии",
+    ["Tracking paused"] = "Запись на паузе", ["Tracking active"] = "Запись активна",
+    ["Sample journal"] = "Пример журнала", ["Exit sample"] = "Выйти из примера",
+    ["Fictional sample data"] = "Демонстрационные данные", ["Previous"] = "Назад", ["Next"] = "Далее",
+    ["New discovery"] = "Новое открытие", ["Goal complete"] = "Цель достигнута",
+    ["Rank earned"] = "Получен новый ранг", ["Mastery earned"] = "Мастерство повышено",
+    ["Discovered: %s"] = "Открыто: %s", ["Goal complete: %s"] = "Цель достигнута: %s",
+    ["%s · %d species discovered"] = "%s · обнаружено видов: %d",
+    ["%d materials collected"] = "Собрано материалов: %d",
+    ["%d creatures skinned"] = "Освежевано существ: %d", ["%d species discovered"] = "Обнаружено видов: %d",
+    ["%d zones explored"] = "Исследовано зон: %d", ["%d XP to next rank"] = "%d опыта до след. ранга",
+    ["%d more skins to %s"] = "Еще %d шкур до %s", ["Page %d / %d"] = "Страница %d / %d",
+    ["Level %s"] = "Уровень %s", ["First recorded %s"] = "Впервые записано: %s",
+    ["%d skinned · %d materials"] = "%d освежевано · %d материалов",
+    ["%d skins sampled"] = "Учтено шкур: %d", ["Last visit: %s"] = "Последний визит: %s",
+    ["Skinning"] = "Снятие шкур", ["Skill"] = "Навык", ["Expand"] = "Развернуть",
+    ["Collapse"] = "Свернуть", ["Open journal"] = "Открыть журнал", ["Open world map"] = "Открыть карту мира",
+    ["Click to inspect"] = "Нажмите для просмотра", ["Right click for a waypoint"] = "Правый клик: точка на карте",
+    ["Your recorded positions"] = "Ваши записанные точки", ["Clear map filter"] = "Сбросить фильтр карты",
+    ["World map pins"] = "Метки на карте мира", ["Minimap gathering pins"] = "Метки на миникарте",
+    ["Live tracker"] = "Панель слежения", ["Minimap journal button"] = "Кнопка у миникарты",
+    ["Discovery notifications"] = "Оповещения об открытиях", ["Notification sounds"] = "Звуки оповещений",
+    ["Animated notifications"] = "Анимация оповещений", ["Creature tooltip notes"] = "Подсказки у существ",
+    ["Record skinning"] = "Запись снятия шкур", ["On"] = "Вкл", ["Off"] = "Выкл",
+    ["Journal size"] = "Размер журнала", ["Tracker size"] = "Размер панели", ["Reset positions"] = "Сброс позиций",
+    ["Copy CSV"] = "Скопировать CSV", ["Welcome to your field journal"] = "Добро пожаловать в полевой журнал",
+    ["Your next discovery starts with one skin."] = "Ваше следующее открытие начинается с одной шкуры.",
+    ["Skin a creature"] = "Освежуйте существо", ["Inspect your discovery"] = "Изучите открытие",
+    ["Choose your next goal"] = "Выберите следующую цель", ["Start exploring"] = "Начать исследование",
+    ["Collect its loot. Your journal records the creature, materials and your location automatically."] = "Соберите добычу. Журнал автоматически запишет существо, материалы и ваше местоположение.",
+    ["Open a creature card to study its drops, build mastery and return to its hunting grounds."] = "Откройте карточку существа, чтобы изучить добычу, повысить мастерство и вернуться в места охоты.",
+    ["Pin a material goal, earn research XP and follow your progress in the compact live tracker."] = "Закрепите цель по материалам, получайте опыт исследований и следите за прогрессом на панели.",
+    ["Your discoveries are waiting"] = "Ваши открытия ждут вас", ["No matching entries"] = "Ничего не найдено",
+    ["Skin a creature and collect its loot to begin. You can explore a separate sample journal in Help."] = "Освежуйте существо и соберите добычу, чтобы начать. В разделе помощи можно открыть демонстрационный журнал.",
+    ["Try a different search or filter."] = "Попробуйте изменить поиск или фильтр.",
+    ["No recorded positions in this area yet."] = "В этой области пока нет записанных точек.",
+    ["Your rank"] = "Ваш ранг", ["Research milestones"] = "Вехи исследований",
+    ["How XP works"] = "Как работает опыт", ["Next fieldwork"] = "Следующая цель",
+    ["Earned"] = "Получено", ["Locked"] = "Недоступно", ["Wear title"] = "Выбрать звание",
+    ["Title selected"] = "Звание выбрано", ["Highest rank reached"] = "Достигнут максимальный ранг",
+    ["First steps"] = "Первые шаги", ["Field collector"] = "Полевой сборщик", ["Naturalist"] = "Натуралист",
+    ["Trail explorer"] = "Первопроходец", ["Seasoned explorer"] = "Опытный исследователь",
+    ["Creature expert"] = "Знаток фауны", ["Master researcher"] = "Мастер-исследователь",
+    ["A hundred hides"] = "Сотня шкур", ["Veteran skinner"] = "Ветеран свежевания",
+    ["Field Apprentice"] = "Ученик исследователя", ["Pelt Tracker"] = "Охотник за шкурами",
+    ["Trailfinder"] = "Следопыт троп", ["Beast Researcher"] = "Исследователь зверей",
+    ["Seasoned Skinner"] = "Опытный кожевник", ["Master Naturalist"] = "Мастер-натуралист",
+    ["Keeper of the Wilds"] = "Хранитель природы", ["Living Atlas"] = "Живой атлас",
+    ["Prices are estimates from local Auctionator data or vendor prices."] = "Оценка стоимости основана на данных Auctionator или ценах торговцев.",
+    ["Frequencies use collected loot. Small samples vary."] = "Шансы рассчитаны по собранной добыче. Небольшие выборки могут отличаться.",
+    ["Map pins mark where you stood while skinning; they are not verified spawns."] = "Метки отмечают место снятия шкуры, а не гарантированные точки появления.",
+    ["Rates include travel and idle time. Available after one minute."] = "Скорость учитывает перемещения и простой. Доступно через одну минуту.",
+    ["This is addon research XP. It does not change character level or profession skill."] = "Это опыт исследований аддона. Он не меняет уровень персонажа или навык профессии.",
+    ["Only new loot on the character that set this goal counts."] = "Учитывается только новая добыча персонажа, установившего цель.",
+    ["Goals of 25+ materials grant 25 XP, up to twice per day."] = "Цели от 25 материалов дают 25 опыта (до 2 раз в день).",
+    ["Exit the sample journal to save changes."] = "Выйдите из демонстрационного журнала, чтобы сохранять изменения.",
+    ["Enter a target from 1 to 999999."] = "Введите цель от 1 до 999999.",
+    ["Field note saved."] = "Полевая заметка сохранена.", ["No active goal"] = "Нет активной цели",
+    ["New species"] = "Новый вид", ["New zone"] = "Новая зона", ["Successful skin"] = "Успешное снятие шкуры",
+    ["Observe a new species"] = "Исследуйте новый вид", ["Explore a new zone"] = "Исследуйте новую зону",
+    ["Unlocks an addon journal title."] = "Открывает звание в журнале аддона.",
+    ["Browse all discoveries"] = "Просмотреть все открытия", ["No completed expeditions yet."] = "Завершенных экспедиций пока нет.",
+    ["Copied with Ctrl+C. Escape closes this window."] = "Скопируйте с помощью Ctrl+C. Escape закрывает окно.",
+    ["Preview discovery"] = "Тест оповещения", ["Preview only · no progress awarded"] = "Предпросмотр · прогресс не начисляется",
+    ["%d XP credited from earlier observations"] = "Начислено %d опыта за прошлые наблюдения",
+    ["Left click: journal · Right click: world map · Drag: move"] = "Левый клик: журнал · Правый клик: карта мира · Перетаскивание: переместить",
+    ["5 XP per skin. New species: +40 XP. New zone: +25 XP. Every recorded creature starts its own mastery journey."] = "5 опыта за шкуру. Новый вид: +40 опыта. Новая зона: +25 опыта. Каждое записанное существо открывает свой путь мастерства.",
+    ["10 / 50 / 100 skins of a species award +30 / 75 / 150 XP. Earn ranks, badges and journal titles as your research grows."] = "10 / 50 / 100 шкур вида дают +30 / 75 / 150 опыта. Получайте ранги, значки и звания по мере исследований.",
+    ["Goals of 25+ materials grant 25 XP, up to twice per day. Goals count only new loot. Discoveries and rank rewards persist between adventures."] = "Цели от 25 материалов дают 25 опыта (до 2 раз в день). Учитывается только новая добыча. Прогресс сохраняется.",
+    ["unknown"] = "неизвестно", ["Unknown zone"] = "Неизвестная зона", ["Unidentified creature"] = "Неопознанное существо",
+    ["Skin loot notifications"] = "Оповещения о добыче со шкур",
+    ["%s · average %s materials/skin"] = "%s · в среднем %s мат./шкура",
+    ["Total · observed rate"] = "Всего · шанс",
+    ["Small sample · observed rates may vary."] = "Малая выборка · шанс может отличаться.",
+    ["Your species mastery"] = "Мастерство по виду",
+    ["Field note"] = "Полевая заметка",
+    ["Material"] = "Материал",
+    ["%d more materials · /tsl for details"] = "Еще %d материалов · подробности: /tsl",
+    ["Skins"] = "Шкуры",
+    ["Journal creation failed twice. Use /reload before trying again."] = "Создание журнала не удалось дважды. Введите /reload перед новой попыткой.",
+    ["10 / 50 / 100 skins: +30 / 75 / 150 XP"] = "10 / 50 / 100 шкур: +30 / 75 / 150 опыта",
+    ["Successful skin: 5 XP"] = "Успешное снятие шкуры: 5 опыта",
+    ["New species: +40 XP"] = "Новый вид: +40 опыта",
+    ["New zone: +25 XP"] = "Новая зона: +25 опыта",
+    -- Demo dataset entries
+    ["Winter Wolf"] = "Зимний волк",
+    ["Young Black Bear"] = "Молодой черный медведь",
+    ["Ice Claw Bear"] = "Ледолапый медведь",
+    ["Snow Tracker Wolf"] = "Снежный волк-следопыт",
+    ["Mountain Boar"] = "Горный вепрь",
+    ["Elder Black Bear"] = "Старый черный медведь",
+    ["Strigid Owl"] = "Стрижиная сова",
+    ["Webwood Lurker"] = "Крадущийся паук Тенистой паутины",
+    ["Light Leather"] = "Тонкая кожа",
+    ["Light Hide"] = "Тонкая шкура",
+    ["Dun Morogh"] = "Дун Морог",
+    ["Loch Modan"] = "Лок Модан",
+    ["Teldrassil"] = "Тельдрассил",
+    ["Wolf"] = "Волк",
+    ["Bear"] = "Медведь",
+    ["Boar"] = "Вепрь",
+    ["Owl"] = "Сова",
+    ["Spider"] = "Паук",
+}
+
+local clientLocale = GetLocale and GetLocale() or "enUS"
+S.locale = (clientLocale == "deDE") and "deDE" or "ruRU"
+
+function S.GetLocale()
+    if S.Model and S.Model.db and S.Model.db.settings and S.Model.db.settings.language then
+        local lang = S.Model.db.settings.language
+        if lang ~= "auto" then return lang end
+    end
+    return S.locale
+end
+
+function S.L(text)
+    if not text then return "" end
+    local loc = S.GetLocale()
+    if loc == "ruRU" then
+        return ru[text] or text
+    elseif loc == "deDE" then
+        return de[text] or text
+    end
+    return text
+end
+
+local function ruPlural(n, one, few, many)
+    n = math.abs(math.floor(n or 0))
+    local mod10 = n % 10
+    local mod100 = n % 100
+    if mod10 == 1 and mod100 ~= 11 then
+        return one
+    elseif mod10 >= 2 and mod10 <= 4 and (mod100 < 10 or mod100 >= 20) then
+        return few
+    else
+        return many
+    end
+end
+
 local singularFormats = {
-        ["%d species discovered"] = { "%d species discovered", "%d Art entdeckt" },
-        ["%d creatures skinned"] = { "%d creature skinned", "%d Tier gehäutet" },
-        ["%d materials collected"] = { "%d material collected", "%d Material gesammelt" },
-        ["%d zones explored"] = { "%d zone explored", "%d Gebiet erforscht" },
-        ["%d skins sampled"] = { "%d skin sampled", "%d Häutung erfasst" },
-        ["%d more skins to %s"] = { "%d more skin to %s", "Noch %d Häutung bis %s" },
+    ["%d species discovered"] = { "%d species discovered", "%d Art entdeckt" },
+    ["%d creatures skinned"] = { "%d creature skinned", "%d Tier gehäutet" },
+    ["%d materials collected"] = { "%d material collected", "%d Material gesammelt" },
+    ["%d zones explored"] = { "%d zone explored", "%d Gebiet erforscht" },
+    ["%d skins sampled"] = { "%d skin sampled", "%d Häutung erfasst" },
+    ["%d more skins to %s"] = { "%d more skin to %s", "Noch %d Häutung bis %s" },
+    ["%d more materials · /tsl for details"] = { "%d more material · /tsl for details", "%d weiteres Material · Details mit /tsl" },
 }
-local germanNouns = { skin = "Häutung", skins = "Häutungen", material = "Material", materials = "Materialien",
-    entry = "Eintrag", entries = "Einträge", species = "Arten", zone = "Gebiet", zones = "Gebiete" }
+
+local ruSingularFormats = {
+    ["%d species discovered"] = { "обнаружен %d вид", "обнаружено %d вида", "обнаружено %d видов" },
+    ["%d creatures skinned"] = { "освежевано %d существо", "освежевано %d существа", "освежевано %d существ" },
+    ["%d materials collected"] = { "собран %d материал", "собрано %d материала", "собрано %d материалов" },
+    ["%d zones explored"] = { "исследована %d зона", "исследовано %d зоны", "исследовано %d зон" },
+    ["%d skins sampled"] = { "учтена %d шкура", "учтено %d шкуры", "учтено %d шкур" },
+    ["%d more skins to %s"] = { "Еще %d шкура до %s", "Еще %d шкуры до %s", "Еще %d шкур до %s" },
+    ["%d more materials · /tsl for details"] = { "Еще %d материал · подробности: /tsl", "Еще %d материала · подробности: /tsl", "Еще %d материалов · подробности: /tsl" },
+}
+
+local germanNouns = {
+    skin = "Häutung", skins = "Häutungen", material = "Material", materials = "Materialien",
+    entry = "Eintrag", entries = "Einträge", species = "Arten", zone = "Gebiet", zones = "Gebiete"
+}
+
+local ruNouns = {
+    skin = { "шкура", "шкуры", "шкур" },
+    skins = { "шкура", "шкуры", "шкур" },
+    material = { "материал", "материала", "материалов" },
+    materials = { "материал", "материала", "материалов" },
+    entry = { "запись", "записи", "записей" },
+    entries = { "запись", "записи", "записей" },
+    species = { "вид", "вида", "видов" },
+    zone = { "зона", "зоны", "зон" },
+    zones = { "зона", "зоны", "зон" },
+}
+
 function S.Fmt(text, ...)
     local first, second = ...
+    local loc = S.GetLocale()
+    if loc == "ruRU" then
+        if ruSingularFormats[text] then
+            local forms = ruSingularFormats[text]
+            local fmt = ruPlural(first, forms[1], forms[2], forms[3])
+            return string.format(fmt, ...)
+        end
+        if text == "%s · %d species discovered" then
+            local fmt = ruPlural(second, "%s · обнаружен %d вид", "%s · обнаружено %d вида", "%s · обнаружено %d видов")
+            return string.format(fmt, ...)
+        end
+        if text == "%d skinned · %d materials" then
+            local matFmt = ruPlural(second, "%d материал", "%d материала", "%d материалов")
+            return string.format("%d освеж. · " .. matFmt, first, second)
+        end
+        return string.format(S.L(text), ...)
+    elseif loc == "deDE" then
+        local fmt = S.L(text)
+        if first == 1 and singularFormats[text] then fmt = singularFormats[text][2] end
+        if text == "%s · %d species discovered" and second == 1 then fmt = "%s · %d Art entdeckt" end
+        if text == "%d skinned · %d materials" and second == 1 then fmt = "%d gehäutet · %d Material" end
+        return string.format(fmt, ...)
+    end
     local fmt = S.L(text)
-    if first == 1 and singularFormats[text] then fmt = singularFormats[text][S.locale == "deDE" and 2 or 1] end
-    if text == "%s · %d species discovered" and second == 1 and S.locale == "deDE" then fmt = "%s · %d Art entdeckt" end
-    if text == "%d skinned · %d materials" and second == 1 then fmt = S.locale == "deDE" and "%d gehäutet · %d Material" or "%d skinned · %d material" end
+    if first == 1 and singularFormats[text] then fmt = singularFormats[text][1] end
+    if text == "%d skinned · %d materials" and second == 1 then fmt = "%d skinned · %d material" end
     return string.format(fmt, ...)
 end
+
 function S.N(n, singular, plural)
-    if S.locale == "deDE" then
+    local loc = S.GetLocale()
+    if loc == "ruRU" then
+        local forms = ruNouns[singular] or ruNouns[plural]
+        if forms then
+            return n .. " " .. ruPlural(n, forms[1], forms[2], forms[3])
+        end
+        return n .. " " .. (S.L(singular) or singular)
+    elseif loc == "deDE" then
         local word = n == 1 and singular or (plural or singular .. "s")
         return n .. " " .. (germanNouns[word] or S.L(word))
     end
     return n .. " " .. (n == 1 and singular or (plural or singular .. "s"))
 end
-de["Skin loot notifications"] = "Beutehinweise beim Häuten"
-de["%s · average %s materials/skin"] = "%s · Ø %s Material/Tier"
-de["Total · observed rate"] = "Menge · Fundrate"
-de["Small sample · observed rates may vary."] = "Kleine Stichprobe · Fundraten können schwanken."
-de["Your species mastery"] = "Deine Artenkenntnis"
-de["Field note"] = "Feldnotiz"
-de["Material"] = "Material"
-de["%d more materials · /tsl for details"] = "%d weitere Materialien · Details mit /tsl"
-singularFormats["%d more materials · /tsl for details"] = { "%d more material · /tsl for details", "%d weiteres Material · Details mit /tsl" }
-de["Skins"] = "Felle"
-de["Journal creation failed twice. Use /reload before trying again."] = "Der Journalaufbau ist zweimal fehlgeschlagen. Bitte vor dem nächsten Versuch /reload ausführen."
-S.localeStrings = de
+
+S.localeStrings = { ru = ru, de = de }
+
