@@ -61,7 +61,8 @@ end
 
 function U:Text(parent, text, x, y, size, color, width)
     local f = self:Acquire("text", parent, function() return parent:CreateFontString(nil, "OVERLAY") end)
-    f:SetFont(STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", size or 12, "")
+    local font = (GameFontNormal and GameFontNormal:GetFont()) or STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF"
+    f:SetFont(font, size or 12, "")
     f:SetShadowColor(0, 0, 0, 1); f:SetShadowOffset(1, -1)
     f:SetPoint("TOPLEFT", x, -y); f:SetTextColor(unpack(color or self.c.text))
     f:SetJustifyH("LEFT"); f:SetJustifyV("TOP"); f:SetWordWrap(true)
@@ -335,7 +336,8 @@ function U:Input(parent, x, y, w, placeholder, callback)
     box:SetBackdrop({ bgFile = white, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
         insets = { left = 2, right = 2, top = 2, bottom = 2 } })
     box:SetBackdropColor(0.025, 0.018, 0.012, 1); box:SetBackdropBorderColor(unpack(self.c.line))
-    box:SetFont(STANDARD_TEXT_FONT, 12, ""); box:SetTextColor(unpack(self.c.text)); box:SetTextInsets(9, 9, 0, 0)
+    local font = (GameFontNormal and GameFontNormal:GetFont()) or STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF"
+    box:SetFont(font, 12, ""); box:SetTextColor(unpack(self.c.text)); box:SetTextInsets(9, 9, 0, 0)
     box:SetAutoFocus(false); box:SetNumeric(false); box:SetMultiLine(false); box:SetMaxLetters(255)
     box.hint = self:OneLine(box, placeholder or "", 9, 8, 11, self.c.muted, w - 18)
     box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
@@ -596,8 +598,8 @@ function U:Export()
             self:Text(popup, "Copied with Ctrl+C. Escape closes this window.", 20, 47, 12, self.c.muted)
             local scroll = CreateFrame("ScrollFrame", nil, popup, "UIPanelScrollFrameTemplate")
             scroll:SetPoint("TOPLEFT", 20, -79); scroll:SetSize(650, 320)
-            local edit = CreateFrame("EditBox", nil, scroll)
-            edit:SetMultiLine(true); edit:SetFont(STANDARD_TEXT_FONT, 12, ""); edit:SetAutoFocus(false); edit:SetWidth(645)
+            local font = (GameFontNormal and GameFontNormal:GetFont()) or STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF"
+            edit:SetMultiLine(true); edit:SetFont(font, 12, ""); edit:SetAutoFocus(false); edit:SetWidth(645)
             edit:SetScript("OnEscapePressed", function() popup:Hide() end); scroll:SetScrollChild(edit); popup.edit = edit
             local close = CreateFrame("Button", nil, popup, "UIPanelCloseButton"); close:SetPoint("TOPRIGHT", -3, -3)
             close:SetScript("OnClick", function() popup:Hide() end)

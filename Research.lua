@@ -120,6 +120,12 @@ local familyIcons = {
         spider = "Spider", spinne = "Spider", turtle = "Turtle", ["schildkröte"] = "Turtle",
         crocolisk = "Crocolisk", krokilisk = "Crocolisk", hyena = "Hyena", ["hyäne"] = "Hyena",
         owl = "Owl", eule = "Owl", bat = "Bat", fledermaus = "Bat", scorpid = "Scorpid", skorpion = "Scorpid",
+        crab = "Crab", krabbe = "Crab", gorilla = "Gorilla",
+        ["кошка"] = "Cat", ["кот"] = "Cat", ["волк"] = "Wolf", ["медведь"] = "Bear",
+        ["вепрь"] = "Boar", ["кабан"] = "Boar", ["раптор"] = "Raptor", ["долгоног"] = "TallStrider",
+        ["паук"] = "Spider", ["черепаха"] = "Turtle", ["кроколиск"] = "Crocolisk", ["гиена"] = "Hyena",
+        ["сова"] = "Owl", ["нетопырь"] = "Bat", ["летучая мышь"] = "Bat", ["скорпид"] = "Scorpid",
+        ["краб"] = "Crab", ["горилла"] = "Gorilla",
 }
 function S:FamilyIcon(family)
     local icon = familyIcons[(family or ""):lower()]
