@@ -92,7 +92,7 @@ function A:Tooltip(pin, point)
         if item then GameTooltip:AddLine("|T" .. (item.icon or S.icon) .. ":14|t " .. item.name .. "  ×" .. items[i][2], 0.88, 0.81, 0.61) end
     end
     if point.last > 0 then GameTooltip:AddLine(S.Fmt("Last visit: %s", date("%d.%m. %H:%M", point.last)), 0.6, 0.63, 0.58) end
-    GameTooltip:AddLine(L("Click to inspect") .. " · " .. L("Right click for a waypoint"), 0.8, 0.73, 0.48)
+    GameTooltip:AddLine(L("Click to inspect") .. S.Sep() .. L("Right click for a waypoint"), 0.8, 0.73, 0.48)
     GameTooltip:AddLine(L("Map pins mark where you stood while skinning; they are not verified spawns."), 0.6, 0.64, 0.59, true)
     GameTooltip:Show()
 end
@@ -103,7 +103,7 @@ function A:Waypoint(point)
     elseif C_Map.SetUserWaypoint and UiMapPoint and UiMapPoint.CreateFromCoordinates then
         C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(point.mapID, point.x, point.y))
         if C_SuperTrack and C_SuperTrack.SetSuperTrackedUserWaypoint then C_SuperTrack.SetSuperTrackedUserWaypoint(true) end
-    else S:Print(string.format("%s: %.1f, %.1f · TomTom", point.zone, point.x * 100, point.y * 100)) end
+    else S:Print(string.format("%s: %.1f, %.1f" .. S.Sep() .. "TomTom", point.zone, point.x * 100, point.y * 100)) end
 end
 
 A.pinMethods = {
@@ -223,7 +223,7 @@ function A:Open(mapID)
     if WorldMapFrame then
         self:Init(); if mapID then WorldMapFrame:SetMapID(mapID) end
         if self.provider then self.provider:RefreshAllData() end
-    else S:Print(L("Open world map") .. " · /tsl here") end
+    else S:Print(L("Open world map") .. S.Sep() .. "/tsl here") end
 end
 
 function A:UpdateMinimap()
@@ -328,7 +328,7 @@ function U:Atlas()
             local top, count
             for key, n in pairs(point.creatures) do if not count or n > count then top, count = key, n end end
             self:OneLine(row, top and data.creatures[top].name or zone.name, 49, 7, 12, self.c.text, 350)
-            self:Text(row, string.format("%.1f, %.1f", point.x * 100, point.y * 100) .. " · " .. S.N(point.skins, "skin"), 49, 27, 10, self.c.muted)
+            self:Text(row, string.format("%.1f, %.1f", point.x * 100, point.y * 100) .. S.Sep() .. S.N(point.skins, "skin"), 49, 27, 10, self.c.muted)
             self:OneLine(row, tostring(point.units), 476, 12, 18, self.c.gold, 60)
             self:Tooltip(row, "Your recorded positions", { S.Fmt("%d skinned · %d materials", point.skins, point.units), "Click to inspect" })
         end

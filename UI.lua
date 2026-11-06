@@ -60,7 +60,14 @@ function U:Panel(parent, x, y, w, h, color)
 end
 
 function U:Text(parent, text, x, y, size, color, width)
-    local f = self:Acquire("text", parent, function() return parent:CreateFontString(nil, "OVERLAY") end)
+    local f = self:Acquire("text", parent, function()
+        local fs = parent:CreateFontString(nil, "OVERLAY")
+        local origSetText = fs.SetText
+        fs.SetText = function(self, str)
+            return origSetText(self, S.Sanitize and S.Sanitize(str) or str)
+        end
+        return fs
+    end)
     local font = (GameFontNormal and GameFontNormal:GetFont()) or STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF"
     f:SetFont(font, size or 12, "")
     f:SetShadowColor(0, 0, 0, 1); f:SetShadowOffset(1, -1)
@@ -323,8 +330,12 @@ end
 function U:Tooltip(owner, title, lines)
     owner:EnableMouse(true)
     owner:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); GameTooltip:SetText(L(title), 0.91, 0.76, 0.43)
-        for _, line in ipairs(lines) do GameTooltip:AddLine(L(line), 0.85, 0.87, 0.79, true) end
+        local t = L(title)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); GameTooltip:SetText(S.Sanitize and S.Sanitize(t) or t, 0.91, 0.76, 0.43)
+        for _, line in ipairs(lines) do
+            local l = L(line)
+            GameTooltip:AddLine(S.Sanitize and S.Sanitize(l) or l, 0.85, 0.87, 0.79, true)
+        end
         GameTooltip:Show()
     end)
     owner:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -561,9 +572,9 @@ function U:Refresh()
     local data, settings = M:Data(), M.db.settings
     local state = S.Research:State(); local rank, nextRank = S.Research:Rank(state.xp)
     self.rankLabel:SetText(L(state.title or rank.name))
-    self.rankXP:SetText(nextRank and (state.xp .. " XP  ·  " .. S.Fmt("%d XP to next rank", nextRank.xp - state.xp)) or L("Highest rank reached"))
+    self.rankXP:SetText(nextRank and (state.xp .. " XP" .. S.Sep(true) .. S.Fmt("%d XP to next rank", nextRank.xp - state.xp)) or L("Highest rank reached"))
     self:SetBar(self.rankFill, nextRank and (state.xp - rank.xp) / (nextRank.xp - rank.xp) or 1)
-    self.context:SetText(S.demo and L("Fictional sample data") or (not settings.enabled and L("Tracking paused") or (S.Fmt("%d species discovered", S.Count(data.creatures)) .. "  ·  " .. S.Fmt("%d creatures skinned", data.skins))))
+    self.context:SetText(S.demo and L("Fictional sample data") or (not settings.enabled and L("Tracking paused") or (S.Fmt("%d species discovered", S.Count(data.creatures)) .. S.Sep(true) .. S.Fmt("%d creatures skinned", data.skins))))
     self.scopeButton.label:SetText(L(settings.scope == "all" and "All characters" or "This character") .. "  v")
     self.scopeButton:SetScript("OnClick", function()
         self:Menu(self.scopeButton, { { "all", "All characters" }, { "character", "This character" } }, settings.scope, function(scope)
@@ -578,7 +589,7 @@ function U:Refresh()
     self.materialSearchBox:SetShown(self.tab == "materials")
     self.scopeButton:SetShown(self.tab == "guide" or self.tab == "materials" or self.tab == "atlas")
     if self.tab == "research" or self.tab == "session" then
-        self.context:SetText(L("This character") .. " · " .. S.Fmt("%d species discovered", S.Count((S.demo and M:Data() or M.db.characters[M.character]).creatures)))
+        self.context:SetText(L("This character") .. S.Sep() .. S.Fmt("%d species discovered", S.Count((S.demo and M:Data() or M.db.characters[M.character]).creatures)))
     end
     if self.tab == "guide" then self:Guide()
     elseif self.tab == "materials" then self:Materials()

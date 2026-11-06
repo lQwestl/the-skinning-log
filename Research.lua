@@ -67,10 +67,10 @@ function R:Record(record, oldSkins, newZone)
     for _, m in ipairs(self.mastery) do
         if oldSkins < m.count and oldSkins + 1 >= m.count then xp = xp + m.xp; milestone = m end
     end
-    self:Award(xp, table.concat(reasons, " · "))
+    self:Award(xp, table.concat(reasons, S.Sep()))
     if milestone and M.db.settings.announce and S.Notice then
         S:Notice({ kind = "mastery", title = "Mastery earned", name = record.name, npcID = record.npcID,
-            family = record.family, key = M:CreatureKey(record), subtitle = S.L(S.Rank(milestone.count)) .. " · " .. S.N(milestone.count, "skin"), xp = milestone.xp })
+            family = record.family, key = M:CreatureKey(record), subtitle = S.L(S.Rank(milestone.count)) .. S.Sep() .. S.N(milestone.count, "skin"), xp = milestone.xp })
     end
     return xp, reasons
 end

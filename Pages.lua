@@ -40,7 +40,7 @@ function U:Guide()
             local row = self:Button(list, "", 3, 5 + (i - 1) * 51, 310, 46, function() self.selected = c.key; self.dropPage = 1; self:Refresh() end, self.selected == c.key)
             self:Icon(row, S:FamilyIcon(c.family), 8, 8, 30)
             self:OneLine(row, (M.db.favorites[c.key] and "|cffe6c16c* |r" or "") .. c.name, 47, 7, 12, self.c.text, 253)
-            self:OneLine(row, L(S.Rank(c.skins)) .. " · " .. S.N(c.skins, "skin"), 47, 27, 10, self.c.muted, 192)
+            self:OneLine(row, L(S.Rank(c.skins)) .. S.Sep() .. S.N(c.skins, "skin"), 47, 27, 10, self.c.muted, 192)
             self:OneLine(row, tostring(c.units), 260, 26, 11, self.c.gold, 40)
             self:Tooltip(row, c.name, { S.Fmt("%d creatures skinned", c.skins), S.Fmt("%d materials collected", c.units),
                 L("Yield per skin") .. ": " .. string.format("%.2f", c.units / math.max(1, c.skins)) })
@@ -87,13 +87,13 @@ function U:CreatureDetail(parent, c, data)
         S.Maps:SetFilter("creature", c.key); S.Maps:Open(bestMap)
     end)
     self:Button(d, "Research", 378, 273, 166, 29, function() self:SelectTab("research") end)
-    self:OneLine(d, best and (best.name .. " · " .. S.N(best.skins, "skin")) or L("Unknown zone"), 17, 315, 11, self.c.muted, 528)
+    self:OneLine(d, best and (best.name .. S.Sep() .. S.N(best.skins, "skin")) or L("Unknown zone"), 17, 315, 11, self.c.muted, 528)
     local drops, summary = sortedItems(c.items), {}
     for i = 1, math.min(2, #drops) do
         local item = data.items[drops[i].id]
         summary[#summary + 1] = drops[i].item.count .. "× " .. item.name
     end
-    self:OneLine(d, table.concat(summary, " · "), 17, 341, 10, self.c.gold, 526)
+    self:OneLine(d, table.concat(summary, S.Sep()), 17, 341, 10, self.c.gold, 526)
 end
 
 function U:CreatureSheet(key)
@@ -139,7 +139,7 @@ function U:CreatureSheet(key)
         if f.key ~= key then self.sheetDropPage = 1 end
         f.key = key
         local rank, _, goal = S.Rank(c.skins)
-        f.title:SetText(c.name); f.meta:SetText((c.family or L("Creatures")) .. " · " .. L(rank))
+        f.title:SetText(c.name); f.meta:SetText((c.family or L("Creatures")) .. S.Sep() .. L(rank))
         f.family:SetTexture(S:FamilyIcon(c.family)); self:AssignCreature(f.model, c, f.family, 0.4)
         f.stats:SetText(S.Fmt("%d creatures skinned", c.skins) .. "\n\n" .. S.Fmt("%d materials collected", c.units) .. "\n\n" .. L("Per skin") .. ": " .. string.format("%.2f", c.units / math.max(1, c.skins)) .. "\n\n" .. (c.skins < 100 and S.Fmt("%d more skins to %s", goal - c.skins, L(S.Rank(goal))) or L("Master")))
         local drops = sortedItems(c.items); local pages = math.max(1, math.ceil(#drops / 4))
@@ -148,7 +148,7 @@ function U:CreatureSheet(key)
             local drop = drops[(self.sheetDropPage - 1) * 4 + i]; row:SetShown(drop ~= nil)
             if drop then
                 local item = data.items[drop.id]; row.icon:SetTexture(item.icon or S.icon); row.name:SetText(S:ItemLabel(item))
-                row.rate:SetText(string.format("%d  ·  %.0f%%", drop.item.count, drop.item.drops / math.max(1, c.skins) * 100))
+                row.rate:SetText(string.format("%d" .. S.Sep(true) .. "%.0f%%", drop.item.count, drop.item.drops / math.max(1, c.skins) * 100))
                 self:Tooltip(row, item.name, { S.Fmt("%d skins sampled", c.skins), L("Frequencies use collected loot. Small samples vary.") })
                 row:SetScript("OnClick", function() self.material = drop.id; self:Open("materials"); f:Hide() end)
             end
@@ -165,7 +165,7 @@ function U:CreatureSheet(key)
         f:SetHeight(groundY + 121)
         local best
         for id, z in pairs(c.zones) do if not best or z.skins > best.skins then best = z; f.mapID = id end end
-        f.ground:SetText(best and (best.name .. " · " .. S.N(best.skins, "skin")) or L("Unknown zone"))
+        f.ground:SetText(best and (best.name .. S.Sep() .. S.N(best.skins, "skin")) or L("Unknown zone"))
         f.note:SetText(S.demo and "" or (self.noteDrafts and self.noteDrafts[key]) or M.db.notes[key] or "")
         f:SetScale(math.min(M.db.settings.journalScale, (UIParent:GetHeight() - 30) / f:GetHeight())); f:Show()
     end)
@@ -191,7 +191,7 @@ function U:Materials()
             local item, id = entry.item, entry.id; local price, source = M:Price(id)
             local row = self:Button(list, "", 3, 4 + (i - 1) * 51, 350, 46, function() self.material = id; self.sourcePage = 1; self:Refresh() end, self.material == id)
             self:Icon(row, item.icon, 8, 8, 30); self:OneLine(row, S:ItemLabel(item), 48, 7, 12, self.c.text, 252)
-            self:Text(row, L(source) .. " · " .. S.Money(price * item.count), 48, 27, 10, self.c.muted)
+            self:Text(row, L(source) .. S.Sep() .. S.Money(price * item.count), 48, 27, 10, self.c.muted)
             self:Text(row, tostring(item.count), 306, 26, 12, self.c.gold)
             row:SetScript("OnEnter", function(owner)
                 GameTooltip:SetOwner(owner, "ANCHOR_RIGHT"); GameTooltip:SetHyperlink("item:" .. id)
@@ -202,7 +202,7 @@ function U:Materials()
     local item, d = data.items[self.material], self:Panel(p, 370, 0, 522, 416)
     self:Icon(d, item.icon, 16, 17, 52)
     local title = self:Text(d, S:ItemLabel(item), 83, 18, 20, self.c.gold, 420); title:SetMaxLines(2)
-    self:Text(d, S.N(item.count, "material") .. " · " .. S.Count(item.creatures) .. " " .. L("Creatures"), 84, 68, 11, self.c.muted, 415)
+    self:Text(d, S.N(item.count, "material") .. S.Sep() .. S.Count(item.creatures) .. " " .. L("Creatures"), 84, 68, 11, self.c.muted, 415)
     self:Line(d, 16, 97, 490)
     self:Section(d, "Best sources", 9, 105, 503)
     local yieldLabel = self:OneLine(d, "Yield per skin", 380, 109, 10, self.c.muted, 110)
@@ -337,7 +337,7 @@ function U:Research()
         self:Text(milestones, S.Fmt("%d more skins to %s", remaining, L(S.Rank(creature.skins + remaining))), 16, 331, 11, self.c.muted, 350)
         self:Button(milestones, "Open journal", 340, 327, 162, 28, function() self:OpenCreature(creature.key) end)
     else self:Text(milestones, "Observe a new species", 16, 309, 14, self.c.text) end
-    self:Text(milestones, L("New species") .. " +40 XP  ·  " .. L("New zone") .. " +25 XP", 16, 376, 11, self.c.gold, 485)
+    self:Text(milestones, L("New species") .. " +40 XP" .. S.Sep(true) .. L("New zone") .. " +25 XP", 16, 376, 11, self.c.gold, 485)
     local b = self:Button(p, "How XP works", 0, 431, 180, 28, function() S:Welcome(true, true) end)
     self:Tooltip(b, "How XP works", { "Successful skin: 5 XP", "New species: +40 XP", "New zone: +25 XP", "10 / 50 / 100 skins: +30 / 75 / 150 XP", "Goals of 25+ materials grant 25 XP, up to twice per day." })
     self:OneLine(p, state.migratedXP and state.migratedXP > 0 and S.Fmt("%d XP credited from earlier observations", state.migratedXP) or "", 200, 440, 10, self.c.muted, 690)
@@ -345,7 +345,7 @@ end
 
 function U:Settings()
     local p, settings = self.content, M.db.settings
-    self.footer:SetText(S.title .. "  " .. S.version .. "   ·   /tsl help")
+    self.footer:SetText(S.title .. "  " .. S.version .. S.Sep(true) .. "/tsl help")
     local options = {
         { "enabled", "Record skinning" }, { "hud", "Live tracker" }, { "announce", "Discovery notifications" },
         { "worldPins", "World map pins" }, { "miniPins", "Minimap gathering pins" },

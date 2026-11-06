@@ -133,13 +133,13 @@ local ru = {
     ["New discovery"] = "Новое открытие", ["Goal complete"] = "Цель достигнута",
     ["Rank earned"] = "Получен новый ранг", ["Mastery earned"] = "Мастерство повышено",
     ["Discovered: %s"] = "Открыто: %s", ["Goal complete: %s"] = "Цель достигнута: %s",
-    ["%s · %d species discovered"] = "%s · обнаружено видов: %d",
+    ["%s · %d species discovered"] = "%s - обнаружено видов: %d",
     ["%d materials collected"] = "Собрано материалов: %d",
     ["%d creatures skinned"] = "Освежевано существ: %d", ["%d species discovered"] = "Обнаружено видов: %d",
     ["%d zones explored"] = "Исследовано зон: %d", ["%d XP to next rank"] = "%d опыта до след. ранга",
     ["%d more skins to %s"] = "Еще %d шкур до %s", ["Page %d / %d"] = "Страница %d / %d",
     ["Level %s"] = "Уровень %s", ["First recorded %s"] = "Впервые записано: %s",
-    ["%d skinned · %d materials"] = "%d освежевано · %d материалов",
+    ["%d skinned · %d materials"] = "%d освежевано - %d материалов",
     ["%d skins sampled"] = "Учтено шкур: %d", ["Last visit: %s"] = "Последний визит: %s",
     ["Skinning"] = "Снятие шкур", ["Skill"] = "Навык", ["Expand"] = "Развернуть",
     ["Collapse"] = "Свернуть", ["Open journal"] = "Открыть журнал", ["Open world map"] = "Открыть карту мира",
@@ -189,21 +189,21 @@ local ru = {
     ["Unlocks an addon journal title."] = "Открывает звание в журнале аддона.",
     ["Browse all discoveries"] = "Просмотреть все открытия", ["No completed expeditions yet."] = "Завершенных экспедиций пока нет.",
     ["Copied with Ctrl+C. Escape closes this window."] = "Скопируйте с помощью Ctrl+C. Escape закрывает окно.",
-    ["Preview discovery"] = "Тест оповещения", ["Preview only · no progress awarded"] = "Предпросмотр · прогресс не начисляется",
+    ["Preview discovery"] = "Тест оповещения", ["Preview only · no progress awarded"] = "Предпросмотр - прогресс не начисляется",
     ["%d XP credited from earlier observations"] = "Начислено %d опыта за прошлые наблюдения",
-    ["Left click: journal · Right click: world map · Drag: move"] = "Левый клик: журнал · Правый клик: карта мира · Перетаскивание: переместить",
+    ["Left click: journal · Right click: world map · Drag: move"] = "Левый клик: журнал - Правый клик: карта мира - Перетаскивание: переместить",
     ["5 XP per skin. New species: +40 XP. New zone: +25 XP. Every recorded creature starts its own mastery journey."] = "5 опыта за шкуру. Новый вид: +40 опыта. Новая зона: +25 опыта. Каждое записанное существо открывает свой путь мастерства.",
     ["10 / 50 / 100 skins of a species award +30 / 75 / 150 XP. Earn ranks, badges and journal titles as your research grows."] = "10 / 50 / 100 шкур вида дают +30 / 75 / 150 опыта. Получайте ранги, значки и звания по мере исследований.",
     ["Goals of 25+ materials grant 25 XP, up to twice per day. Goals count only new loot. Discoveries and rank rewards persist between adventures."] = "Цели от 25 материалов дают 25 опыта (до 2 раз в день). Учитывается только новая добыча. Прогресс сохраняется.",
     ["unknown"] = "неизвестно", ["Unknown zone"] = "Неизвестная зона", ["Unidentified creature"] = "Неопознанное существо",
     ["Skin loot notifications"] = "Оповещения о добыче со шкур",
-    ["%s · average %s materials/skin"] = "%s · в среднем %s мат./шкура",
-    ["Total · observed rate"] = "Всего · шанс",
-    ["Small sample · observed rates may vary."] = "Малая выборка · шанс может отличаться.",
+    ["%s · average %s materials/skin"] = "%s - в среднем %s мат./шкура",
+    ["Total · observed rate"] = "Всего - шанс",
+    ["Small sample · observed rates may vary."] = "Малая выборка - шанс может отличаться.",
     ["Your species mastery"] = "Мастерство по виду",
     ["Field note"] = "Полевая заметка",
     ["Material"] = "Материал",
-    ["%d more materials · /tsl for details"] = "Еще %d материалов · подробности: /tsl",
+    ["%d more materials · /tsl for details"] = "Еще %d материалов - подробности: /tsl",
     ["Skins"] = "Шкуры",
     ["Journal creation failed twice. Use /reload before trying again."] = "Создание журнала не удалось дважды. Введите /reload перед новой попыткой.",
     ["10 / 50 / 100 skins: +30 / 75 / 150 XP"] = "10 / 50 / 100 шкур: +30 / 75 / 150 опыта",
@@ -242,11 +242,30 @@ function S.GetLocale()
     return S.locale
 end
 
+function S.Sep(wide)
+    if S.GetLocale() == "ruRU" then
+        return wide and "  -  " or " - "
+    end
+    return wide and "  ·  " or " · "
+end
+
+function S.Sanitize(str)
+    if S.GetLocale() == "ruRU" and type(str) == "string" and str:find("·") then
+        return (str:gsub("%s*·%s*", " - "))
+    end
+    return str
+end
+
 function S.L(text)
     if not text then return "" end
     local loc = S.GetLocale()
+    local res
     if loc == "ruRU" then
-        return ru[text] or text
+        res = ru[text] or text
+        if type(res) == "string" and res:find("·") then
+            res = res:gsub("%s*·%s*", " - ")
+        end
+        return res
     elseif loc == "deDE" then
         return de[text] or text
     end
@@ -283,7 +302,7 @@ local ruSingularFormats = {
     ["%d zones explored"] = { "исследована %d зона", "исследовано %d зоны", "исследовано %d зон" },
     ["%d skins sampled"] = { "учтена %d шкура", "учтено %d шкуры", "учтено %d шкур" },
     ["%d more skins to %s"] = { "Еще %d шкура до %s", "Еще %d шкуры до %s", "Еще %d шкур до %s" },
-    ["%d more materials · /tsl for details"] = { "Еще %d материал · подробности: /tsl", "Еще %d материала · подробности: /tsl", "Еще %d материалов · подробности: /tsl" },
+    ["%d more materials · /tsl for details"] = { "Еще %d материал - подробности: /tsl", "Еще %d материала - подробности: /tsl", "Еще %d материалов - подробности: /tsl" },
 }
 
 local germanNouns = {
@@ -310,17 +329,17 @@ function S.Fmt(text, ...)
         if ruSingularFormats[text] then
             local forms = ruSingularFormats[text]
             local fmt = ruPlural(first, forms[1], forms[2], forms[3])
-            return string.format(fmt, ...)
+            return S.Sanitize(string.format(fmt, ...))
         end
         if text == "%s · %d species discovered" then
-            local fmt = ruPlural(second, "%s · обнаружен %d вид", "%s · обнаружено %d вида", "%s · обнаружено %d видов")
-            return string.format(fmt, ...)
+            local fmt = ruPlural(second, "%s - обнаружен %d вид", "%s - обнаружено %d вида", "%s - обнаружено %d видов")
+            return S.Sanitize(string.format(fmt, ...))
         end
         if text == "%d skinned · %d materials" then
             local matFmt = ruPlural(second, "%d материал", "%d материала", "%d материалов")
-            return string.format("%d освеж. · " .. matFmt, first, second)
+            return S.Sanitize(string.format("%d освеж. - " .. matFmt, first, second))
         end
-        return string.format(S.L(text), ...)
+        return S.Sanitize(string.format(S.L(text), ...))
     elseif loc == "deDE" then
         local fmt = S.L(text)
         if first == 1 and singularFormats[text] then fmt = singularFormats[text][2] end

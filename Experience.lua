@@ -173,7 +173,7 @@ function H:Refresh()
     local goal, progress, other = M:GoalProgress(); local hasGoal = goal and not other
     local baseHeight = hasGoal and 165 or 127
     self.frame:SetHeight(baseHeight + (settings.hudExpanded and 151 or 0))
-    self.title:SetText(S.demo and L("Sample journal") or (settings.enabled and (L("Skinning") .. " · " .. GetZoneText()) or L("Tracking paused")))
+    self.title:SetText(S.demo and L("Sample journal") or (settings.enabled and (L("Skinning") .. S.Sep() .. GetZoneText()) or L("Tracking paused")))
     self.totals:SetText(S.Fmt("%d skinned · %d materials", data.skins, data.units))
     self.expand.label:SetText(settings.hudExpanded and "-" or "+")
     local recent = data.history[1]; local best, loot
@@ -183,7 +183,7 @@ function H:Refresh()
     self.loot.icon:SetTexture(loot and loot.icon or "Interface\\Icons\\Ability_Tracking")
     self.loot.name:SetText(loot and loot.name or L("Your discoveries are waiting")); self.loot.qty:SetText(loot and ("+" .. loot.count) or "")
     local state = R:State(); local rank, nextRank = R:Rank(state.xp)
-    self.rank:SetText(L(state.title or rank.name) .. " · " .. state.xp .. " XP")
+    self.rank:SetText(L(state.title or rank.name) .. S.Sep() .. state.xp .. " XP")
     U:SetBar(self.xpFill, nextRank and (state.xp - rank.xp) / (nextRank.xp - rank.xp) or 1)
     self.goal:SetShown(hasGoal and true or false)
     if hasGoal then self.goal.name:SetText(goal.name); self.goal.count:SetText(progress .. "/" .. goal.target); U:SetBar(self.goal.fill, progress / goal.target) end
@@ -238,7 +238,7 @@ function S:NextNotice()
         local f = self.notice
         f:ClearAllPoints(); f:SetPoint("TOP", UIParent, "TOP", 0, -115)
         f.title:SetText(L(entry.title)); f.name:SetText(entry.name or ""); f.sub:SetText(entry.subtitle or L("Click to inspect"))
-        f.xp:SetText((entry.xp and entry.xp > 0 and ("+" .. entry.xp .. " XP  ·  ") or "") .. L("Click to inspect"))
+        f.xp:SetText((entry.xp and entry.xp > 0 and ("+" .. entry.xp .. " XP" .. S.Sep(true)) or "") .. L("Click to inspect"))
         f.icon:SetTexture(entry.icon or self:FamilyIcon(entry.family)); U:AssignCreature(f.model, entry, f.icon, 0.5)
         f:SetScale(math.min(1, (UIParent:GetWidth() - 35) / 428))
         local began, token = GetTime(), entry
@@ -313,7 +313,7 @@ function S:Welcome(force, research)
         end
         for i, step in ipairs(steps) do f.steps[i].icon:SetTexture(step[1]); f.steps[i].title:SetText(L(step[2])); f.steps[i].body:SetText(L(step[3])) end
         local credit = R:State().migratedXP or 0
-        f.credit:SetText(credit > 0 and S.Fmt("%d XP credited from earlier observations", credit) or "/tsl  ·  /tsl tracker  ·  /tsl here")
+        f.credit:SetText(credit > 0 and S.Fmt("%d XP credited from earlier observations", credit) or ("/tsl" .. S.Sep(true) .. "/tsl tracker" .. S.Sep(true) .. "/tsl here"))
         f.switch.label:SetText(L(research and "First steps" or "How XP works"))
         f:SetScale(math.min(1, (UIParent:GetWidth() - 35) / 566, (UIParent:GetHeight() - 35) / 478)); f:Show()
     end)

@@ -77,14 +77,14 @@ function S:CreatureTooltip(tooltip, data)
         local name = item and self:ItemLabel(item) or (L("Material") .. " " .. itemID)
         local icon = item and item.icon or self.icon
         local rate = drop.drops and string.format("%.0f%%", drop.drops / c.skins * 100) or "--"
-        tooltip:AddDoubleLine("|T" .. icon .. ":14|t " .. name, drop.count .. "×  ·  " .. rate, 0.93, 0.91, 0.84, 0.93, 0.91, 0.84)
+        tooltip:AddDoubleLine("|T" .. icon .. ":14|t " .. name, drop.count .. "×" .. self.Sep(true) .. rate, 0.93, 0.91, 0.84, 0.93, 0.91, 0.84)
     end
     if #drops > 3 then tooltip:AddLine(self.Fmt("%d more materials · /tsl for details", #drops - 3), 0.65, 0.64, 0.58) end
     if c.skins < 10 then tooltip:AddLine(L("Small sample · observed rates may vary."), 0.65, 0.64, 0.58, true) end
     local personal = M.db.characters[M.character].creatures[c.key]
     local skins = personal and personal.skins or 0
     local _, _, target = self.Rank(skins)
-    tooltip:AddDoubleLine(L("Your species mastery"), skins >= 100 and L("Master") or (skins .. "/" .. target .. " · " .. L(self.Rank(target))),
+    tooltip:AddDoubleLine(L("Your species mastery"), skins >= 100 and L("Master") or (skins .. "/" .. target .. self.Sep() .. L(self.Rank(target))),
         0.85, 0.73, 0.45, 0.82, 0.82, 0.75)
     local goal, progress, other = M:GoalProgress(true)
     if goal and not other and c.items[goal.itemID] then
