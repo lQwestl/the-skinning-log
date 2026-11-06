@@ -1,0 +1,8 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Button name="SkinningLogSolPinTemplate" virtual="true" enableMouse="true">
+        <Size x="23" y="23"/>
+        <Scripts>
+            <OnLoad>SkinningLogSolPin_OnLoad(self);</OnLoad>
+        </Scripts>
+    </Button>
+</Ui>

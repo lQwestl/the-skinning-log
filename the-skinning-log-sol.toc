@@ -1,0 +1,21 @@
+## Interface: 16001
+## Title: The Skinning Log
+## Notes: Your personal skinning field guide, yield ledger, and hunting atlas. /tsl
+## Author: Serron
+## Version: 0.4.3
+## IconTexture: Interface\Icons\INV_Misc_Pelt_Wolf_01
+## SavedVariables: SkinningLogSolDB
+## OptionalDeps: Auctionator, TomTom
+## X-Category: Professions
+
+Locale.lua
+Model.lua
+Research.lua
+Tracker.lua
+Demo.lua
+UI.lua
+Atlas.lua
+Pins.xml
+Pages.lua
+Experience.lua
+Bootstrap.lua
